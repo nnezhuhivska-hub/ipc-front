@@ -20,7 +20,7 @@ st.markdown("""
 @st.cache_data
 def load_data():
     try:
-        return pd.read_excel("database.xlsx")
+        return pd.read_excel("база даних.xlsx")
     except:
         st.error("Помилка: Файл database.xlsx не знайдено в репозиторії або він пошкоджений.")
         return None
