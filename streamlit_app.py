@@ -3,23 +3,67 @@ import pandas as pd
 import io
 import time
 
+# Налаштування сторінки під мобільний інтерфейс
 st.set_page_config(page_title="ВІК Фронт / IPC Front", page_icon="🛡️", layout="centered")
 
-# ПОЛЬОВИЙ КОНТРАСТ
+# 🔥 ГАРМОНІЙНИЙ ТАКТИЧНИЙ ДИЗАЙН: ГРАФІТОВО-ЧОРНІ КОМІРКИ ТА НЕОНОВО-ЗЕЛЕНІ РАМКИ
 st.markdown("""
     <style>
+    /* Суворе чорне тло для максимального контрасту літер */
     .stApp { background-color: #000000 !important; color: #FFFFFF !important; }
+    
+    /* Великі яскраві заголовки */
     h1 { color: #FFFF00 !important; font-size: 34px !important; font-weight: 900 !important; }
     h2 { color: #FFFFFF !important; font-size: 26px !important; font-weight: 800 !important; }
     h3 { color: #FFFF00 !important; font-size: 24px !important; font-weight: 800 !important; }
+    
+    /* Підписи до полів вибору */
     label[data-testid="stWidgetLabel"] p { font-size: 22px !important; font-weight: bold !important; color: #FFFFFF !important; }
-    div[data-baseweb="select"] { border: 4px solid #FFFF00 !important; border-radius: 8px !important; background-color: #001F3F !important; }
-    div[data-baseweb="select"] * { color: #FFFFFF !important; font-size: 22px !important; font-weight: 900 !important; }
-    div[data-testid="stMetricValue"] { color: #00FF00 !important; font-size: 54px !important; font-weight: 900 !important; background-color: #111111 !important; padding: 15px; border-radius: 8px; border: 2px solid #00FF00; text-align: center; }
+    
+    /* 🔥 ГАРМОНІЙНЕ ГРАФІТОВЕ ТЛО ДЛЯ КОМІРОК ВИБОРУ ТА М'ЯКА НЕОНОВО-ЗЕЛЕНА РАМКА */
+    div[data-baseweb="select"] { 
+        border: 3px solid #00C897 !important; 
+        border-radius: 10px !important; 
+        background-color: #161A22 !important; 
+    }
+    div[data-baseweb="select"] * { 
+        color: #FFFFFF !important; 
+        font-size: 22px !important; 
+        font-weight: bold !important; 
+    }
+    
+    /* Поле виводу великої концентрації */
+    div[data-testid="stMetricValue"] { 
+        color: #00FF00 !important; 
+        font-size: 54px !important; 
+        font-weight: 900 !important; 
+        background-color: #161A22 !important; 
+        padding: 15px; 
+        border-radius: 10px; 
+        border: 2px solid #00FF00; 
+        text-align: center; 
+    }
     div[data-testid="stMetricLabel"] p { color: #FFFFFF !important; font-size: 20px !important; font-weight: bold !important; }
+    
+    /* Тексти результатів, методів та експозиції */
     div[data-testid="stMarkdownContainer"] p { font-size: 22px !important; font-weight: bold !important; color: #FFFFFF !important; }
     div[data-testid="stMarkdownContainer"] strong { color: #FFFF00 !important; }
-    .stButton>button { background-color: #FFFF00 !important; color: #000000 !important; border: 3px solid #FFFF00 !important; border-radius: 10px !important; width: 100%; height: 65px !important; font-size: 24px !important; font-weight: 900 !important; }
+    
+    /* Великі зелені плашки з кількістю речовини */
+    .stAlert { background-color: #161A22 !important; border: 3px solid #00FF00 !important; border-radius: 10px !important; }
+    .stAlert p { font-size: 22px !important; font-weight: 900 !important; color: #00FF00 !important; }
+    
+    /* Велика тактична жовта кнопка таймера з чорним текстом */
+    .stButton>button { 
+        background-color: #FFFF00 !important; 
+        color: #000000 !important; 
+        border: 3px solid #FFFF00 !important; 
+        border-radius: 10px !important; 
+        width: 100%; 
+        height: 65px !important; 
+        font-size: 24px !important; 
+        font-weight: 900 !important; 
+    }
     .stButton>button:hover { background-color: #FFFFFF !important; color: #000000 !important; }
     </style>
 """, unsafe_allow_html=True)
@@ -42,7 +86,7 @@ lang_options = {
 selected_lang_label = st.selectbox("🌐 Оберіть мову / Select Language:", list(lang_options.keys()))
 lang = lang_options[selected_lang_label]
 
-# Завантажуємо тексти інтерфейсу безпосередньо з Секретів, щоб уникнути KeyError
+# Завантажуємо тексти інтерфейсу
 try:
     title_text = st.secrets["translations"][f"title_{lang}"]
     caption_text = st.secrets["translations"][f"caption_{lang}"]
@@ -136,4 +180,5 @@ with tab_home:
             st.warning("⚠️ No data.")
 
 with tab_emergency:
-    st.title("🚨 Emergency Protocols")
+    st.title("🚨 Аварійні протоколи")
+    st.info("🚨 EMERGENCY PROTOCOLS ACTIVATED")
