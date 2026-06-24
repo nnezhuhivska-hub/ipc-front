@@ -28,8 +28,19 @@ def load_data():
 
 df = load_data()
 
-# Глобальний перемикач на 8 бойових мов
-lang = st.radio("🌍 Мова / Language:", ["UA", "EN", "PL", "DE", "FR", "ES", "IT", "PT"], horizontal=True)
+# 🔥 ОДНА КНОПКА-ГЛОБУС ДЛЯ ВИБОРУ МОВИ (8 МОВ)
+lang_options = {
+    "🇺🇦 Українська (UA)": "UA",
+    "🇬🇧 English (EN)": "EN",
+    "🇵🇱 Polski (PL)": "PL",
+    "🇩🇪 Deutsch (DE)": "DE",
+    "🇫🇷 Français (FR)": "FR",
+    "🇪🇸 Español (ES)": "ES",
+    "🇮🇹 Italiano (IT)": "IT",
+    "🇵🇹 Português (PT)": "PT"
+}
+selected_lang_label = st.selectbox("🌐 Оберіть мову / Select Language:", list(lang_options.keys()))
+lang = lang_options[selected_lang_label]
 
 # Словник інтерфейсу на 8 мов
 t = {
@@ -50,7 +61,7 @@ t = {
         "btn_timer": "⏱️ START EXPOSURE TIMER", "timer_done": "✅ Exposure completed!"
     },
     "PL": {
-        "title": "🧮 Kalkulator IPC", "caption": "Autononiczne obliczanie roztworów",
+        "title": "🧮 Kalkulator IPC", "caption": "Autonomiczne obliczanie roztworów",
         "step1": "1. Wybierz obiekt dezynfekcji:", "step2": "2. Wybierz środek dezynfekujący:",
         "examples": "💡 **Przykłady obiektów:**", "result": "🏁 Wynik obliczeń:",
         "conc": "Stężenie roztworu roboczego", "tabs": ["🧮 Kalkulator", "🚨 Protokoły awaryjne"],
@@ -108,14 +119,12 @@ with tab_home:
     st.caption(t[lang]["caption"])
     
     if df is not None:
-        # Визначаємо поточний мовний стовпчик
         obj_col = f"Object_{lang}" if f"Object_{lang}" in df.columns else "Object_UA"
         
-        # 1. Вибір об'єкта дезінфекції (Завжди унікальні назви на обраній мові)
+        # 1. Вибір об'єкта дезінфекції
         objects = sorted(df[obj_col].dropna().unique())
         selected_object = st.selectbox(t[lang]["step1"], objects)
         
-        # 🔥 СУВОРИЙ МОСТ ДЛЯ ФІЛЬТРАЦІЇ (Знаходимо технічний код рядка для обраного об'єкта)
         matched_rows = df[df[obj_col] == selected_object]
         
         # Вивід прикладів
@@ -126,7 +135,7 @@ with tab_home:
         
         st.markdown(" ")
         
-        # 2. Вибір дезінфекційного засобу (Виводить УСІ доступні засоби для цього об'єкта без обрізання!)
+        # 2. Вибір дезінфекційного засобу (УСІ засоби тепер на місці!)
         available_products = sorted(matched_rows['Product'].dropna().unique())
         selected_product = st.selectbox(t[lang]["step2"], available_products)
         
@@ -158,7 +167,7 @@ with tab_home:
                     percent = int((remaining / total_seconds) * 100)
                     progress_bar.progress(percent)
                     status_text.markdown(f"⏳ **{remaining} min.**")
-                    time.sleep(60) # Реальний час
+                    time.sleep(60) # Ренальний час
                     
                 st.balloons()
                 status_text.success(t[lang]["timer_done"])
