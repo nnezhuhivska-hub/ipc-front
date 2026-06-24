@@ -28,35 +28,76 @@ def load_data():
 
 df = load_data()
 
-# Глобальний перемикач мови у самому верху додатку
-lang = st.radio("🌍 Мова / Language:", ["UA", "EN"], horizontal=True)
+# Глобальний перемикач на 8 бойових мов
+lang = st.radio("🌍 Мова / Language:", ["UA", "EN", "PL", "DE", "FR", "ES", "IT", "PT"], horizontal=True)
 
-# Словник інтерфейсу
+# Словник інтерфейсу на 8 мов
 t = {
     "UA": {
-        "title": "🧮 Калькулятор ВІК", "caption": "Автономний розрахунок робочих розчинів",
+        "title": "🧮 Калькулятор ВІК", "caption": "Автономний розрахунок розчинів",
         "step1": "1. Оберіть об'єкт дезінфекції:", "step2": "2. Оберіть дезінфекційний засіб:",
         "examples": "💡 **Приклади об'єктів:**", "result": "🏁 Результат розрахунку:",
         "conc": "Концентрація робочого розчину", "tabs": ["🧮 Калькулятор", "🚨 Аварійні Протоколи"],
-        "tab2_title": "🚨 Аварійні Протоколи", "tab2_select": "Оберіть тип ситуації:",
-        "tab2_opt": ["💉 Укол / Поріз", "💦 Розлиття біорідини", "🗑️ Розсипання відходів"],
         "tablets": "табл. на 10л води", "method": "Спосіб знезараження", "exp": "Рекомендований час експозиції",
-        "btn_timer": "⏱️ ЗАПУСТИТИ ТАЙМЕР ЕКСПОЗИЦІЇ", "timer_done": "✅ Експозицію завершено! Об'єкт повністю безпечний."
+        "btn_timer": "⏱️ ЗАПУСТИТИ ТАЙМЕР ЕКСПОЗИЦІЇ", "timer_done": "✅ Експозицію завершено!"
     },
     "EN": {
-        "title": "🧮 IPC Calculator", "caption": "Autonomous calculation of working solutions",
+        "title": "🧮 IPC Calculator", "caption": "Autonomous solution calculation",
         "step1": "1. Select disinfection object:", "step2": "2. Select disinfectant product:",
         "examples": "💡 **Examples of objects:**", "result": "🏁 Calculation Result:",
         "conc": "Working solution concentration", "tabs": ["🧮 Calculator", "🚨 Emergency Protocols"],
-        "tab2_title": "🚨 Emergency Protocols", "tab2_select": "Select emergency type:",
-        "tab2_opt": ["💉 Needle stick / Cut", "💦 Bioliquid spill", "🗑️ Waste spillage"],
         "tablets": "tabs per 10L of water", "method": "Disinfection method", "exp": "Recommended exposure time",
-        "btn_timer": "⏱️ START EXPOSURE TIMER", "timer_done": "✅ Exposure completed! Object is fully safe."
+        "btn_timer": "⏱️ START EXPOSURE TIMER", "timer_done": "✅ Exposure completed!"
+    },
+    "PL": {
+        "title": "🧮 Kalkulator IPC", "caption": "Autononiczne obliczanie roztworów",
+        "step1": "1. Wybierz obiekt dezynfekcji:", "step2": "2. Wybierz środek dezynfekujący:",
+        "examples": "💡 **Przykłady obiektów:**", "result": "🏁 Wynik obliczeń:",
+        "conc": "Stężenie roztworu roboczego", "tabs": ["🧮 Kalkulator", "🚨 Protokoły awaryjne"],
+        "tablets": "tabl. na 10L wody", "method": "Metoda dezynfekcji", "exp": "Zalecany czas ekspozycji",
+        "btn_timer": "⏱️ URUCHOM TIMER EKSPOZYCJI", "timer_done": "✅ Ekspozycja zakończona!"
+    },
+    "DE": {
+        "title": "🧮 IPC-Rechner", "caption": "Autonome Berechnung von Lösungen",
+        "step1": "1. Desinfektionsobjekt auswählen:", "step2": "2. Desinfektionsmittel auswählen:",
+        "examples": "💡 **Objektbeispiele:**", "result": "🏁 Berechnungsergebnis:",
+        "conc": "Konzentration der Arbeitslösung", "tabs": ["🧮 Rechner", "🚨 Notfallprotokolle"],
+        "tablets": "Tabl. pro 10L Wasser", "method": "Desinfektionsmethode", "exp": "Empfohlene Einwirkzeit",
+        "btn_timer": "⏱️ BELICHTUNGSTIMER STARTEN", "timer_done": "✅ Einwirkzeit beendet!"
+    },
+    "FR": {
+        "title": "🧮 Calculateur IPC", "caption": "Calcul autonome des solutions",
+        "step1": "1. Sélectionner l'objet de désinfection:", "step2": "2. Sélectionner le désinfectant:",
+        "examples": "💡 **Exemples d'objets:**", "result": "🏁 Résultat du calcul:",
+        "conc": "Concentration de la solution de travail", "tabs": ["🧮 Calculateur", "🚨 Protocoles d'urgence"],
+        "tablets": "comprimés pour 10L d'eau", "method": "Méthode de désinfection", "exp": "Temps d'exposition recommandé",
+        "btn_timer": "⏱️ DÉMARRER LE MINUTEUR D'EXPOSITION", "timer_done": "✅ Exposition terminée!"
+    },
+    "ES": {
+        "title": "🧮 Calculadora IPC", "caption": "Cálculo autónomo de soluciones",
+        "step1": "1. Seleccione objeto de desinfección:", "step2": "2. Seleccione desinfectante:",
+        "examples": "💡 **Ejemplos de objetos:**", "result": "🏁 Resultado del cálculo:",
+        "conc": "Concentración de la solución de trabajo", "tabs": ["🧮 Calculadora", "🚨 Protocolos de emergencia"],
+        "tablets": "pastillas por 10L de agua", "method": "Método de desinfección", "exp": "Tiempo de exposición recomendado",
+        "btn_timer": "⏱️ INICIAR TEMPORIZADOR DE EXPOSICIÓN", "timer_done": "✅ ¡Exposición completada!"
+    },
+    "IT": {
+        "title": "🧮 Calcolatore IPC", "caption": "Calcolo autonomo delle soluzioni",
+        "step1": "1. Seleziona l'oggetto di disinfezione:", "step2": "2. Seleziona il disinfettante:",
+        "examples": "💡 **Esempi di oggetti:**", "result": "🏁 Risultato del calcolo:",
+        "conc": "Concentrazione della soluzione di lavoro", "tabs": ["🧮 Calcolatore", "🚨 Protocolli di emergenza"],
+        "tablets": "compresse per 10L d'acqua", "method": "Metodo di disinfezione", "exp": "Tempo di esposizione raccomandato",
+        "btn_timer": "⏱️ AVVIA TIMING DI ESPOSIZIONE", "timer_done": "✅ Esposizione completata!"
+    },
+    "PT": {
+        "title": "🧮 Calculadora IPC", "caption": "Cálculo autónomo de soluções",
+        "step1": "1. Selecione o objeto de desinfecção:", "step2": "2. Selecione o desinfetante:",
+        "examples": "💡 **Exemplos de objetos:**", "result": "🏁 Resultado do cálculo:",
+        "conc": "Concentração da solução de trabalho", "tabs": ["🧮 Calculadora", "🚨 Protocolos de emergência"],
+        "tablets": "pastilhas por 10L de água", "method": "Método de desinfecção", "exp": "Tempo de exposição recomendado",
+        "btn_timer": "⏱️ INICIAR TEMPORIZADOR DE EXPOSIÇÃO", "timer_done": "✅ Exposição concluída!"
     }
 }
-
-# Визначаємо назви стовпчиків залежно від мови
-obj_col = "Object_UA" if lang == "UA" else "Object_EN"
 
 # Головне меню додатку (Вкладки)
 tab_home, tab_emergency = st.tabs(t[lang]["tabs"])
@@ -67,38 +108,45 @@ with tab_home:
     st.caption(t[lang]["caption"])
     
     if df is not None:
-        # 1. Вибір об'єкта дезінфекції
+        # Визначаємо поточний мовний стовпчик
+        obj_col = f"Object_{lang}" if f"Object_{lang}" in df.columns else "Object_UA"
+        
+        # 1. Вибір об'єкта дезінфекції (Завжди унікальні назви на обраній мові)
         objects = sorted(df[obj_col].dropna().unique())
         selected_object = st.selectbox(t[lang]["step1"], objects)
         
-        # ВИВІД ПРИКЛАДІВ ДЛЯ ОБРАНОГО ОБ'ЄКТА
-        filtered_df = df[df[obj_col] == selected_object]
-        if 'Examples_UA' in df.columns and not filtered_df.empty:
-            examples_text = filtered_df['Examples_UA'].iloc[0] # Тимчасово показуємо UA приклади
-            st.markdown(f"{t[lang]['examples']} *{examples_text}*")
+        # 🔥 СУВОРИЙ МОСТ ДЛЯ ФІЛЬТРАЦІЇ (Знаходимо технічний код рядка для обраного об'єкта)
+        matched_rows = df[df[obj_col] == selected_object]
+        
+        # Вивід прикладів
+        if 'Examples_UA' in df.columns and not matched_rows.empty:
+            examples_text = matched_rows['Examples_UA'].iloc[0]
+            if pd.notna(examples_text) and str(examples_text).strip() != "—":
+                st.markdown(f"{t[lang]['examples']} *{examples_text}*")
         
         st.markdown(" ")
         
-        # 2. Фільтрація засобів під обраний об'єкт
-        products = filtered_df['Product'].dropna().unique()
-        selected_product = st.selectbox(t[lang]["step2"], products)
+        # 2. Вибір дезінфекційного засобу (Виводить УСІ доступні засоби для цього об'єкта без обрізання!)
+        available_products = sorted(matched_rows['Product'].dropna().unique())
+        selected_product = st.selectbox(t[lang]["step2"], available_products)
         
-        # Фінальний розрахунок результатів
-        result_row = filtered_df[filtered_df['Product'] == selected_product].iloc[0]
+        # Фінальний точний рядок розрахунку
+        final_row = matched_rows[matched_rows['Product'] == selected_product].reset_index(drop=True).iloc[0]
         
         st.markdown("---")
         st.subheader(t[lang]["result"])
-        st.metric(label=t[lang]["conc"], value=f"{result_row['Conc_%']}")
+        st.metric(label=t[lang]["conc"], value=f"{final_row['Conc_%']}")
         
-        if 'Tablets' in result_row and pd.notna(result_row['Tablets']) and str(result_row['Tablets']).strip() != "—":
-            st.success(f"🧫 {result_row['Tablets']} {t[lang]['tablets']}")
-        elif 'Volume_ml' in result_row and pd.notna(result_row['Volume_ml']) and str(result_row['Volume_ml']).strip() != "—":
-            st.success(f"🧪 {result_row['Volume_ml']}")
+        if 'Tablets' in final_row and pd.notna(final_row['Tablets']) and str(final_row['Tablets']).strip() != "—":
+            st.success(f"🧫 {final_row['Tablets']} {t[lang]['tablets']}")
+        elif 'Volume_ml' in final_row and pd.notna(final_row['Volume_ml']) and str(final_row['Volume_ml']).strip() != "—":
+            st.success(f"🧪 {final_row['Volume_ml']}")
             
-        st.info(f"ℹ️ {t[lang]['method']}: **{result_row['Method_UA']}**")
-        
-        if 'Exposure_min' in result_row and pd.notna(result_row['Exposure_min']):
-            raw_exposure = str(result_row['Exposure_min'])
+        if 'Method_UA' in final_row and pd.notna(final_row['Method_UA']):
+            st.info(f"ℹ️ {t[lang]['method']}: **{final_row['Method_UA']}**")
+            
+        if 'Exposure_min' in final_row and pd.notna(final_row['Exposure_min']):
+            raw_exposure = str(final_row['Exposure_min'])
             exp_time = int(''.join(filter(str.isdigit, raw_exposure))) if any(char.isdigit() for char in raw_exposure) else 15
             st.warning(f"⏱️ {t[lang]['exp']}: **{exp_time} min.**")
             
@@ -110,23 +158,11 @@ with tab_home:
                     percent = int((remaining / total_seconds) * 100)
                     progress_bar.progress(percent)
                     status_text.markdown(f"⏳ **{remaining} min.**")
-                    time.sleep(60) # 60 секунд для шпиталю
+                    time.sleep(60) # Реальний час
                     
                 st.balloons()
                 status_text.success(t[lang]["timer_done"])
 
 # --- ВКЛАДКА 2: АВАРІЙНІ ПРОТОКОЛИ ---
 with tab_emergency:
-    st.title(t[lang]["tab2_title"])
-    emergency_type = st.radio(t[lang]["tab2_select"], t[lang]["tab2_opt"], horizontal=True)
-    st.markdown("---")
-    
-    if "Укол" in emergency_type or "Needle" in emergency_type:
-        st.subheader("🚨 EMERGENCY ACTIONS FOR NEEDLE STICK / CUT:")
-        st.markdown("""
-        * **1.** DO NOT PANIC! Stop the procedure. Do not squeeze or rub the injury site!
-        * **2.** Wash the wound with plenty of water and soap under running water (min 3 min).
-        * **3.** Treat skin with 70% alcohol or skin antiseptic. Do not pour iodine deep into the wound!
-        * **4.** Cover the wound with a waterproof plaster.
-        """)
-        st.error("⚠️ PEP EFFICIENCY WINDOW IS 72 HOURS!")
+    st.info("🚨 EMERGENCY PROTOCOLS")
