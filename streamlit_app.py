@@ -67,7 +67,7 @@ lang_options = {
 selected_lang_label = st.selectbox("🌐 Оберіть мову / Select Language:", list(lang_options.keys()))
 lang = lang_options[selected_lang_label]
 
-# Словник інтерфейсу на 8 мов (Додано пункти для забруднення)
+# Словник інтерфейсу на 8 мов
 t = {
     "UA": {
         "title": "🧮 Калькулятор ВІК", "caption": "Автономний розрахунок розчинів",
@@ -120,7 +120,7 @@ t = {
         "step3": "❓ ¿Hay contaminación visible (sangre, fluidos, etc.):", "cont_opt": ["SÍ", "NO"],
         "examples": "💡 Ejemplos de objetos:", "result": "🏁 Resultado del cálculo:",
         "conc": "Concentración de la solución de trabajo", "tabs": ["🧮 Calculadora", "🚨 Protocolos de emergencia"],
-        "tablets": "pastillas por 10L de agua", "method": "Método de desinfección", "exp": "Tiempo de exposición ';recomendado",
+        "tablets": "pastillas por 10L de agua", "method": "Método de desinfección", "exp": "Tiempo de exposición recomendado",
         "btn_timer": "⏱️ INICIAR TEMPORIZADOR DE EXPOSICIÓN", "timer_done": "✅ ¡Exposición completada!"
     },
     "IT": {
@@ -158,9 +158,9 @@ with tab_home:
         objects = sorted(df[obj_col].dropna().unique())
         selected_object = st.selectbox(t[lang]["step1"], objects)
         
+        # Фільтруємо таблицю за обраним об'єктом
         matched_rows = df[df[obj_col] == selected_object]
         
-        # Вивід прикладів
+        # Вивід прикладів з фіксованими відступами
         if 'Examples_UA' in df.columns and not matched_rows.empty:
             examples_text = matched_rows['Examples_UA'].values[0]
-            if pd.notna(examples_text) and str(examples_text).strip() != "—":
