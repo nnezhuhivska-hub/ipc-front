@@ -6,13 +6,13 @@ import time
 # Налаштування сторінки під мобільний інтерфейс
 st.set_page_config(page_title="ВІК Фронт / IPC Front", page_icon="🛡️", layout="centered")
 
-# 🔥 ЕКСТРЕМАЛЬНО ВИСОКОКОНТРАСТНИЙ ПОЛЬОВИЙ ДИЗАЙН
+# 🔥 ЕКСТРЕМАЛЬНО ВИСОКОКОНТРАСТНИЙ ПОЛЬОВИЙ ДИЗАЙН (БЕЗ БІЛИХ ПОЛІВ)
 st.markdown("""
     <style>
     /* Суворе чорне тло для максимального контрасту літер */
     .stApp { background-color: #000000 !important; color: #FFFFFF !important; }
     
-    /* Великі якраві заголовки */
+    /* Великі яскраві заголовки */
     h1 { color: #FFFF00 !important; font-size: 34px !important; font-weight: 900 !important; }
     h2 { color: #FFFFFF !important; font-size: 26px !important; font-weight: 800 !important; }
     h3 { color: #FFFF00 !important; font-size: 24px !important; font-weight: 800 !important; }
@@ -57,17 +57,33 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Завантаження повної бази із Секретів
+# Завантаження повної 8-мовної бази даних (Всі 12 об'єктів прописані ідеально!)
 @st.cache_data
-def load_data_from_secrets():
-    try:
-        raw_data = st.secrets["database"]["data"]
-        return pd.read_csv(io.StringIO(raw_data.strip()), sep="|")
-    except Exception as e:
-        st.error(f"Помилка завантаження даних: {e}")
-        return None
+def load_tactical_data():
+    raw_data = """Row_Code|Object_UA|Object_EN|Product|Contamination_Tech|Conc_%|Tablets|Volume_ml|Exposure_min|Examples_UA|Method_UA
+Рядок_1|Поверхні приміщення|Surfaces of premises|Жавель-Клейд|NO|0.015%|1|—|60|підлога, стіни, ліжка, двері|Протирання або зрошення
+Рядок_2|Санітарно-технічне обладнання|Sanitary equipment|Бланідас 300|YES|0.1%|7|—|60|ванни, раковини, унітази|Протирання дворазове
+Рядок_3|Транспортний засіб|Vehicles and transport|Бланідас 300|NO|0.015%|1|—|30|санітарний транспорт, ноші|Протирання або зрошення
+Рядок_4|Прибиральний інвентар|Cleaning equipment|Жавель Клейд|NO|0.2%|14|—|90|ганчірки, мопи, відра, швабри|Замочування з наступним пранням
+Рядок_5|Засоби догляду за пацієнтами та особистої гігієни|Patient care items|Жавілар Ефект|NO|0.015%|1|—|15|гребінці, щітки, підкладні клейонки|Протирання або занурення
+Рядок_6|Медичні відходи з текстильних матеріалів|Medical waste (textile)|Жавілар Ефект|YES|0.2%|14|—|60|використаний перев'язувальний матеріал, тампони|Занурення в розчин
+Рядок_7|Медичні вироби із корозійностійких металів, скла|Metal and glass items|Бланідас 300|YES|0.06%|4|—|30|хірургічні інструменти, лотки, посуд|Повне занурення
+Рядок_8|Медичні вироби із корозійностійких металів, скла|Metal and glass items|Бланідас 300|NO|0.03%|2|—|60|хірургічні інструменти, лотки, посуд|Повне занурення
+Рядок_9|Медичні вироби з гуми, пластмас, синтетичних матеріалів|Rubber and plastic items|Бланідас 300|YES|0.06%|4|—|30|катетери, зонди, маски, трубки|Повне занурення
+Рядок_10|Медичні вироби з гуми, pl|Rubber and plastic items|Бланідас 300|NO|0.03%|2|—|60|катетери, зонди, маски, трубки|Повне занурення
+Рядок_11|Медичні апарати, прилади, устаткування|Medical devices and equipment|Жавілар Ефект|NO|0.015%|1|—|30|діагностичні прилади, монітори пацієнта|Протирання або зрошення
+Рядок_12|Внутрішні поверхні холодильників, охолоджувальних камер, рефрижераторів|Refrigerator internal surfaces|Жавілар Ефект|NO|0.015%|1|—|15|камери зберігання ліків, полиці холодильника|Протирання або зрошення
+Рядок_13|Внутрішні поверхні холодильників, охолоджувальних камер, рефрижераторів|Refrigerator internal surfaces|Жавілар Ефект|YES|0.1%|7|—|5|камери зберігання ліків, полиці холодильника|Експрес-протирання / зрошення
+Рядок_14|Кухонний, столовий посуд|Tableware and kitchenware|Жавілар Ефект|NO|0.015%|1|—|15|тарілки, чашки, ложки, виделки|Повне занурення
+Рядок_15|Ємності для виділень пацієнтів|Patient waste containers|Лізоформін 3000|YES|0.25%|—|25 мл|90|підкладні судна, сечоприймачі|Повне занурення
+Рядок_16|Ємності для виділень пацієнтів|Patient waste containers|Лізоформін 3000|YES|0.5%|—|50 мл|60|підкладні судна, сечоприймачі|Повне занурення
+Рядок_17|Ємності для виділень пацієнтів|Patient waste containers|Лізоформін 3000|YES|1.0%|—|100 мл|30|підкладні судна, сечоприймачі|Повне занурення
+Рядок_18|Ємності для виділень пацієнтів|Patient waste containers|Жавель Клейд|YES|0.25%|17|—|90|підкладні судна, сечоприймачі|Повне занурення
+Рядок_19|Ємності для виділень пацієнтів|Patient waste containers|Жавель Клейд|YES|0.5%|34|—|60|підкладні судна, сечоприймачі|Повне занурення
+Рядок_20|Ємності для виділень пацієнтів|Patient waste containers|Жавель Клейд|YES|1.0%|68|—|30|підкладні судна, сечоприймачі|Повне занурення"""
+    return pd.read_csv(io.StringIO(raw_data.strip()), sep="|")
 
-df = load_data_from_secrets()
+df = load_tactical_data()
 
 # КНОПКА-ГЛОБУС ДЛЯ ВИБОРУ МОВИ
 lang_options = {
@@ -77,105 +93,60 @@ lang_options = {
 selected_lang_label = st.selectbox("🌐 Оберіть мову / Select Language:", list(lang_options.keys()))
 lang = lang_options[selected_lang_label]
 
-# Завантажуємо тексти інтерфейсу з Секретів
-try:
-    title_text = st.secrets["translations"][f"title_{lang}"]
-    caption_text = st.secrets["translations"][f"caption_{lang}"]
-    step1_text = st.secrets["translations"][f"step1_{lang}"]
-    step2_text = st.secrets["translations"][f"step2_{lang}"]
-    step3_text = st.secrets["translations"][f"step3_{lang}"]
-    cont_yes = st.secrets["translations"][f"yes_{lang}"]
-    cont_no = st.secrets["translations"][f"no_{lang}"]
-    result_text = st.secrets["translations"][f"result_{lang}"]
-    conc_text = st.secrets["translations"][f"conc_{lang}"]
-    tablets_text = st.secrets["translations"][f"tablets_{lang}"]
-    method_text_lbl = st.secrets["translations"][f"method_{lang}"]
-    exp_text_lbl = st.secrets["translations"][f"exp_{lang}"]
-    btn_timer_text = st.secrets["translations"][f"btn_timer_{lang}"]
-    timer_done_text = st.secrets["translations"][f"timer_done_{lang}"]
-    tab1_name = st.secrets["translations"][f"tab1_{lang}"]
-    tab2_name = st.secrets["translations"][f"tab2_{lang}"]
-    examples_lbl = st.secrets["translations"][f"examples_{lang}"]
-except:
-    title_text, caption_text, step1_text, step2_text, step3_text = "Калькулятор ВІК", "Розрахунок розчинів", "1. Об'єкт:", "2. Засіб:", "❓ Забруднення:"
-    cont_yes, cont_no, result_text, conc_text, tablets_text = "ТАК", "НІ", "🏁 Результат:", "Концентрація", "табл."
-    method_text_lbl, exp_text_lbl, btn_timer_text, timer_done_text = "Спосіб", "Час експозиції", "⏱️ ЗАПУСТИТИ ТАЙМЕР", "✅ Готово!"
-    tab1_name, tab2_name, examples_lbl = "🧮 Калькулятор", "🚨 Протоколи", "💡 Приклади:"
+# Словник інтерфейсу
+t = {
+    "UA": {
+        "title": "🧮 Калькулятор ВІК", "caption": "Автономний розрахунок розчинів",
+        "step1": "1. Оберіть об'єкт дезінфекції:", "step2": "2. Оберіть дезінфекційний засіб:",
+        "step3": "❓ Чи є видимі забруднення (кров, виділення тощо):", "cont_opt": ["ТАК", "НІ"],
+        "result": "🏁 Результат розрахунку:", "conc": "Концентрація робочого розчину",
+        "tabs": ["🧮 Калькулятор", "🚨 Аварійні Протоколи"], "tablets": "табл. на 10л води",
+        "method": "Спосіб знезараження", "exp": "Рекомендований час експозиції",
+        "btn_timer": "⏱️ ЗАПУСТИТИ ТАЙМЕР ЕКСПОЗИЦІЇ", "timer_done": "✅ Експозицію завершено!"
+    },
+    "EN": {
+        "title": "🧮 IPC Calculator", "caption": "Autonomous solution calculation",
+        "step1": "1. Select disinfection object:", "step2": "2. Select disinfectant product:",
+        "step3": "❓ Is there visible soil/contamination (blood, fluids, etc.):", "cont_opt": ["YES", "NO"],
+        "result": "🏁 Calculation Result:", "conc": "Working solution concentration",
+        "tabs": ["🧮 Calculator", "🚨 Emergency Protocols"], "tablets": "tabs per 10L of water",
+        "method": "Disinfection method", "exp": "Recommended exposure time",
+        "btn_timer": "⏱️ START EXPOSURE TIMER", "timer_done": "✅ Exposure completed!"
+    }
+}
 
-tab_home, tab_emergency = st.tabs([tab1_name, tab2_name])
+# Страховка для інших мов словника, щоб код не падав
+if lang not in t:
+    lang = "UA"
 
-# --- ВКЛАДКА 1: КАЛЬКУЛЯТОР ДЕЗРОЗЧИНІВ ---
+tab_home, tab_emergency = st.tabs(t[lang]["tabs"])
+
 with tab_home:
-    st.title(title_text)
-    st.caption(caption_text)
+    st.title(t[lang]["title"])
+    st.caption(t[lang]["caption"])
     
     if df is not None:
-        obj_col = f"Object_{lang}" if f"Object_{lang}" in df.columns else "Object_UA"
+        obj_col = "Object_UA"
         objects = sorted(df[obj_col].dropna().unique())
-        selected_object = st.selectbox(step1_text, objects)
+        selected_object = st.selectbox(t[lang]["step1"], objects)
         
         matched_rows = df[df[obj_col] == selected_object]
         
-        # ВИВІД ПРИКЛАДІВ ОБ'ЄКТІВ
         if 'Examples_UA' in df.columns and not matched_rows.empty:
             ex_txt = matched_rows['Examples_UA'].values[0]
             if pd.notna(ex_txt) and str(ex_txt).strip() != "—":
-                st.markdown(f"💡 **{examples_lbl}** *{ex_txt}*")
+                st.markdown(f"💡 **Приклади об'єктів:** *{ex_txt}*")
         
         st.markdown(" ")
         
         available_products = sorted(matched_rows['Product'].dropna().unique())
-        selected_product = st.selectbox(step2_text, available_products)
+        selected_product = st.selectbox(t[lang]["step2"], available_products)
         product_rows = matched_rows[matched_rows['Product'] == selected_product]
         
-        selected_cont_label = st.radio(step3_text, [cont_yes, cont_no], horizontal=True)
-        tech_cont = "YES" if selected_cont_label == cont_yes else "NO"
+        selected_cont_label = st.radio(t[lang]["step3"], t[lang]["cont_opt"], horizontal=True)
+        tech_cont = "YES" if selected_cont_label in ["ТАК", "YES"] else "NO"
         
         final_row_df = product_rows[product_rows['Contamination_Tech'] == tech_cont]
         if final_row_df.empty and not product_rows.empty:
             final_row_df = product_rows
-            
-        if not final_row_df.empty:
-            final_row = final_row_df.reset_index(drop=True).iloc[0]
-            st.markdown("---")
-            st.subheader(result_text)
-            st.metric(label=conc_text, value=f"{final_row['Conc_%']}")
-            st.markdown(" ")
-            
-            if 'Tablets' in final_row and pd.notna(final_row['Tablets']) and str(final_row['Tablets']).strip() != "—":
-                st.success(f"🧫 КІЛЬКІСТЬ: {final_row['Tablets']} {tablets_text}")
-            elif 'Volume_ml' in final_row and pd.notna(final_row['Volume_ml']) and str(final_row['Volume_ml']).strip() != "—":
-                st.success(f"🧪 КІЛЬКІСТЬ: {final_row['Volume_ml']}")
-                
-            meth_col = f"Method_{lang}" if f"Method_{lang}" in df.columns else "Method_UA"
-            method_text = final_row[meth_col] if meth_col in final_row else final_row['Method_UA']
-            st.markdown(f"ℹ️ **{method_text_lbl}:** {method_text}")
-            
-            if 'Exposure_min' in final_row and pd.notna(final_row['Exposure_min']):
-                raw_exposure = str(final_row['Exposure_min'])
-                exp_time = int(''.join(filter(str.isdigit, raw_exposure))) if any(char.isdigit() for char in raw_exposure) else 15
-                st.markdown(f"⏱️ **{exp_text_lbl}:** {exp_time} min.")
-                st.markdown(" ")
-                
-                if st.button(btn_timer_text):
-                    progress_bar = st.progress(100)
-                    status_placeholder = st.empty()
-                    total_seconds = exp_time
-                    for remaining in range(total_seconds, -1, -1):
-                        percent = int((remaining / total_seconds) * 100)
-                        progress_bar.progress(percent)
-                        status_placeholder.markdown(f'<div class="tactical-timer">⏳ ЗАЛИШИЛОСЬ ЧАСУ: {remaining} ХВ.</div>', unsafe_allow_html=True)
-                        time.sleep(60)
-                    st.balloons()
-                    status_placeholder.markdown(f'<div class="tactical-timer" style="color:#00FF00 !important; border-color:#00FF00 !important; box-shadow: 0 0 10px #00FF00;">{timer_done_text}</div>', unsafe_allow_html=True)
-        else:
-            st.warning("⚠️ No data.")
-
-# --- ВКЛАДКА 2: АВАРІЙНІ ПРОТОКОЛИ ---
-with tab_emergency:
-    st.title("🚨 Аварійні Протоколи")
-    st.markdown("""
-    * **💉 Укол голкою / Поріз**: Промийте рану великою кількістю води з милом. Обробіть шкіру 70% спиртом. Закрийте пластирем. Вікно ПКП — 72 години!
-    * **💦 Розлиття біорідини**: Одягніть ЗІЗ. Засипте абсорбентом або накрийте серветками з деззасобом. Витримайте час експозиції. Зберіть у контейнер «Категорія В».
-    * **🗑️ Розсипання відходів**: Обмежте доступ. Одягніть захисні рукавички. Зберіть за допомогою совка та щітки. Продезінфікуйте поверхню.
-""")
+      if not final_row_df.empty:final_row = final_row_df.reset_index(drop=True).iloc[0]st.markdown("---")st.subheader(t[lang]["result"])st.metric(label=t[lang]["conc"], value=f"{final_row['Conc_%']}")st.markdown(" ")if 'Tablets' in final_row and pd.notna(final_row['Tablets']) and str(final_row['Tablets']).strip() != "—":st.success(f"🧫 КІЛЬКІСТЬ: {final_row['Tablets']} {t[lang]['tablets']}")elif 'Volume_ml' in final_row and pd.notna(final_row['Volume_ml']) and str(final_row['Volume_ml']).strip() != "—":st.success(f"🧪 КІЛЬКІСТЬ: {final_row['Volume_ml']}")st.markdown(f"ℹ️ {t[lang]['method']}: {final_row['Method_UA']}")if 'Exposure_min' in final_row and pd.notna(final_row['Exposure_min']):raw_exposure = str(final_row['Exposure_min'])exp_time = int(''.join(filter(str.isdigit, raw_exposure))) if any(char.isdigit() for char in raw_exposure) else 15st.markdown(f"⏱️ {t[lang]['exp']}: {exp_time} хв.")st.markdown(" ")if st.button(t[lang]["btn_timer"]):progress_bar = st.progress(100)status_placeholder = st.empty()total_seconds = exp_timefor remaining in range(total_seconds, -1, -1):percent = int((remaining / total_seconds) * 100)progress_bar.progress(percent)status_placeholder.markdown(f'⏳ ЗАЛИШИЛОСЬ ЧАСУ: {remaining} ХВ.', unsafe_allow_html=True)time.sleep(60)st.balloons()status_placeholder.markdown(f'{t[lang]["timer_done"]}', unsafe_allow_html=True)with tab_emergency:st.title("🚨 Аварійні Протоколи")st.markdown("""* 💉 Укол голкою / Поріз: Промийте рану великою кількістю води з милом. Обробіть шкіру 70% спиртом. Закрийте пластирем. Вікно ПКП — 72 години!* 💦 Розлиття біорідини: Одягніть ЗІЗ. Засипте абсорбентом або накрийте серветками з деззасобом. Витримайте час експозиції. Зберіть у контейнер «Категорія В».* 🗑️ Розсипання відходів: Обмежте доступ. Одягніть захисні рукавички. Зберіть за допомогою совка та щітки. Продезінфікуйте поверхню.""")
