@@ -3,131 +3,72 @@ import pandas as pd
 import io
 import time
 
-# Налаштування сторінки під мобільний інтерфейс
 st.set_page_config(page_title="ВІК Фронт / IPC Front", page_icon="🛡️", layout="centered")
 
-# 🔥 ЗАЛІЗНИЙ ПОЛЬОВИЙ КОНТРАСТ: ЧОРНЕ ТЛО ТА ВЕЛИКІ ЯСКРАВІ ТАКТИЧНІ КНОПКИ
 st.markdown("""
     <style>
-    /* Суворе чорне тло для максимального контрасту літер */
     .stApp { background-color: #000000 !important; color: #FFFFFF !important; }
-    
-    /* Великі яскраві заголовки */
     h1 { color: #FFFF00 !important; font-size: 34px !important; font-weight: 900 !important; }
     h2 { color: #FFFFFF !important; font-size: 26px !important; font-weight: 800 !important; }
     h3 { color: #FFFF00 !important; font-size: 24px !important; font-weight: 800 !important; }
+    label[data-testid="stWidgetLabel"] p { font-size: 22px !important; font-weight: bold !important; color: #FFFFFF !important; }
     
-    /* Підписи до кроків */
-    div[data-testid="stMarkdownContainer"] p { font-size: 24px !important; font-weight: 900 !important; color: #FFFFFF !important; }
+    /* ТЕМНО-СИНЄ ТЛО ДЛЯ КОМІРОК ВИБОРУ ТА ТОУСТА ЖОВТА РАМКА */
+    div[data-baseweb="select"] { border: 4px solid #FFFF00 !important; border-radius: 8px !important; background-color: #001F3F !important; }
+    div[data-baseweb="select"] * { color: #FFFFFF !important; font-size: 20px !important; font-weight: 900 !important; }
+    
+    /* ТЕМНО-СИНЄ ТЛО ДЛЯ САМОГО ВИПАДАЮЧОГО ВІКНА (ПЕРЕФАРБОВУЄМО МЕНЮ) */
+    div[data-baseweb="popover"] { background-color: #001F3F !important; border: 3px solid #FFFF00 !important; border-radius: 8px !important; }
+    div[data-baseweb="popover"] ul { background-color: #001F3F !important; }
+    div[data-baseweb="popover"] li { background-color: #001F3F !important; color: #FFFFFF !important; font-size: 20px !important; font-weight: bold !important; padding: 12px !important; }
+    div[data-baseweb="popover"] li:hover { background-color: #FFFF00 !important; color: #000000 !important; }
+    
+    /* Великі яскраві кнопки ТАК / НІ */
+    div[data-testid="stHorizontalBlock"] .stButton>button { background-color: #001F3F !important; color: #FFFFFF !important; border: 3px solid #FFFF00 !important; border-radius: 10px !important; height: 60px !important; font-size: 22px !important; font-weight: 900 !important; }
+    div[data-testid="stHorizontalBlock"] .stButton>button:hover { background-color: #FFFF00 !important; color: #000000 !important; }
+    
+    /* Результати та таймер */
+    div[data-testid="stMetricValue"] { color: #00FF00 !important; font-size: 54px !important; font-weight: 900 !important; background-color: #111111 !important; padding: 15px; border-radius: 8px; border: 2px solid #00FF00; text-align: center; }
+    div[data-testid="stMetricLabel"] p { color: #FFFFFF !important; font-size: 20px !important; font-weight: bold !important; }
+    div[data-testid="stMarkdownContainer"] p { font-size: 22px !important; font-weight: bold !important; color: #FFFFFF !important; }
     div[data-testid="stMarkdownContainer"] strong { color: #FFFF00 !important; }
-    
-    /* 🔥 КНОПКИ-ПЛАШКИ ВИБОРУ: Глибоке темно-синє тло та товста жовта рамка */
-    .stButton>button { 
-        background-color: #001F3F !important; 
-        color: #FFFFFF !important; 
-        border: 4px solid #FFFF00 !important; 
-        border-radius: 12px !important; 
-        width: 100%; 
-        min-height: 75px !important; 
-        font-size: 22px !important; 
-        font-weight: 900 !important; 
-        text-align: left !important;
-        padding: 15px !important;
-        white-space: normal !important;
-    }
-    .stButton>button:hover { background-color: #FFFF00 !important; color: #000000 !important; }
-    
-    /* Величезне неонове поле результату розрахунку */
-    div[data-testid="stMetricValue"] { 
-        color: #00FF00 !important; 
-        font-size: 56px !important; 
-        font-weight: 900 !important; 
-        background-color: #111111 !important; 
-        padding: 20px; 
-        border-radius: 10px; 
-        border: 3px solid #00FF00; 
-        text-align: center; 
-    }
-    div[data-testid="stMetricLabel"] p { color: #FFFFFF !important; font-size: 22px !important; font-weight: bold !important; }
+    .stButton>button { background-color: #FFFF00 !important; color: #000000 !important; border: 3px solid #FFFF00 !important; border-radius: 10px !important; width: 100%; height: 65px !important; font-size: 24px !important; font-weight: 900 !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# Завантаження повної 8-мовної бази даних на 12 офіційних об'єктів (Вмонтовано в код!)
 @st.cache_data
 def load_data():
-    raw_data = """Row_Code|Object_UA|Object_EN|Product|Contamination_Tech|Conc_%|Tablets|Volume_ml|Exposure_min|Examples_UA|Method_UA
-Рядок_1|Поверхні приміщення|Surfaces of premises|Жавель-Клейд|NO|0.015%|1|—|60|підлога, стіни, ліжка, двері|Протирання або зрошення
-Рядок_2|Санітарно-технічне обладнання|Sanitary equipment|Бланідас 300|YES|0.1%|7|—|60|ванни, раковини, унітази|Протирання дворазове
-Рядок_3|Транспортний засіб|Vehicles and transport|Бланідас 300|NO|0.015%|1|—|30|санітарний транспорт, ноші|Протирання або зрошення
-Рядок_4|Прибиральний інвентар|Cleaning equipment|Жавель Клейд|NO|0.2%|14|—|90|ганчірки, мопи, відра, швабри|Замочування з наступним пранням
-Рядок_5|Засоби догляду за пацієнтами та особистої гігієни|Patient care items|Жавілар Ефект|NO|0.015%|1|—|15|гребінці, щітки, підкладні клейонки|Протирання або занурення
-Рядок_6|Медичні відходи з текстильних матеріалів|Medical waste (textile)|Жавілар Ефект|YES|0.2%|14|—|60|використаний перев'язувальний матеріал, тампони|Занурення в розчин
-Рядок_7|Медичні вироби із корозійностійких металів, скла|Metal and glass items|Бланідас 300|YES|0.06%|4|—|30|хірургічні інструменти, лотки, лабораторний посуд|Повне занурення
-Рядок_8|Медичні вироби із корозійностійких металів, скла|Metal and glass items|Бланідас 300|NO|0.03%|2|—|60|хірургічні інструменти, лотки, лабораторний посуд|Повне занурення
-Рядок_9|Медичні вироби з гуми, пластмас, синтетичних матеріалів|Rubber and plastic items|Бланідас 300|YES|0.06%|4|—|30|катетери, зонди, маски, трубки|Повне занурення
-Рядок_10|Медичні вироби з гуми, пластмас, синтетичних матеріалів|Rubber and plastic items|Бланідас 300|NO|0.03%|2|—|60|катетери, зонди, маски, трубки|Повне занурення
-Рядок_11|Медичні апарати, прилади, устаткування|Medical devices and equipment|Жавілар Ефект|NO|0.015%|1|—|30|діагностичні прилади, монітори пацієнта|Протирання або зрошення
-Рядок_12|Внутрішні поверхні холодильників, охолоджувальних камер, рефрижераторів|Refrigerator internal surfaces|Жавілар Ефект|NO|0.015%|1|—|15|камери зберігання ліків, полиці холодильника|Протирання або зрошення
-Рядок_13|Внутрішні поверхні холодильників, охолоджувальних камер, рефрижераторів|Refrigerator internal surfaces|Жавілар Ефект|YES|0.1%|7|—|5|камери зберігання ліків, полиці холодильника|Експрес-протирання / зрошення
-Рядок_14|Кухонний, столовий посуд|Tableware and kitchenware|Жавілар Ефект|NO|0.015%|1|—|15|тарілки, чашки, ложки, виделки|Повне занурення
-Рядок_15|Ємності для виділень пацієнтів|Patient waste containers|Лізоформін 3000|YES|0.25%|—|25 мл|90|підкладні судна, сечоприймачі|Повне занурення
-Рядок_16|Ємності для виділень пацієнтів|Patient waste containers|Лізоформін 3000|YES|0.5%|—|50 мл|60|підкладні судна, сечоприймачі|Повне занурення
-Рядок_17|Ємності для виділень пацієнтів|Patient waste containers|Лізоформін 3000|YES|1.0%|—|100 мл|30|підкладні судна, сечоприймачі|Повне занурення
-Рядок_18|Ємності для виділень пацієнтів|Patient waste containers|Жавель Клейд|YES|0.25%|17|—|90|підкладні судна, сечоприймачі|Повне занурення
-Рядок_19|Ємності для виділень пацієнтів|Patient waste containers|Жавель Клейд|YES|0.5%|34|—|60|підкладні судна, сечоприймачі|Повне занурення
-Рядок_20|Ємності для виділень пацієнтів|Patient waste containers|Жавель Клейд|YES|1.0%|68|—|30|підкладні судна, сечоприймачі|Повне занурення"""
-    return pd.read_csv(io.StringIO(raw_data.strip()), sep="|")
+    try:
+        raw_data = st.secrets["database"]["data"]
+        return pd.read_csv(io.StringIO(raw_data.strip()), sep="|")
+    except Exception as e:
+        st.error(f"Помилка завантаження даних із Секретів: {e}")
+        return None
 
 df = load_data()
 
-# Стартова сторінка
 st.title("🧮 Калькулятор ВІК")
 st.caption("Автономний розрахунок розчинів для польових шпиталів")
 
 if df is not None:
-    # Отримуємо залізно унікальний список усіх 12 медичних об'єктів
     objects_list = sorted(df['Object_UA'].dropna().unique())
+    selected_object = st.selectbox("1. Оберіть об'єкт дезінфекції:", objects_list)
     
-    st.markdown("### 1. Оберіть об'єкт дезінфекції:")
-    
-    # Використовуємо сесію, щоб додаток запам'ятав клік на кнопку
-    if 'selected_obj' not in st.session_state:
-        st.session_state.selected_obj = objects_list[0]
-        
-    # 🔥 ВЕЛИКІ ТЕМНО-СИНІ КНОПКИ ЗАМІСТЬ БІЛОГО МЕНЮ
-    for obj in objects_list:
-        if st.button(f"▪️ {obj}"):
-            st.session_state.selected_obj = obj
-            
-    st.markdown(f"👉 **Обрано:** `{st.session_state.selected_obj}`")
-    st.markdown("---")
-    
-    # Робота з обраним об'єктом
-    matched_rows = df[df['Object_UA'] == st.session_state.selected_obj]
+    matched_rows = df[df['Object_UA'] == selected_object]
     
     if not matched_rows.empty:
-        # Вивід прикладів
         ex_txt = matched_rows['Examples_UA'].values[0]
         if pd.notna(ex_txt) and str(ex_txt).strip() != "—":
             st.markdown(f"💡 **Приклади об'єктів:** *{ex_txt}*")
-            
-        st.markdown("### 2. Оберіть дезінфекційний засіб:")
+        
+        st.markdown(" ")
+        
         available_products = sorted(matched_rows['Product'].dropna().unique())
+        selected_product = st.selectbox("2. Оберіть дезінфекційний засіб:", available_products)
+        product_rows = matched_rows[matched_rows['Product'] == selected_product]
         
-        # Кнопки для вибору засобу
-        if 'selected_prod' not in st.session_state or st.session_state.selected_prod not in available_products:
-            st.session_state.selected_prod = available_products[0]
-            
-        for prod in available_products:
-            if st.button(f"🧪 {prod}"):
-                st.session_state.selected_prod = prod
-                
-        st.markdown(f"👉 **Обрано засіб:** `{st.session_state.selected_prod}`")
-        st.markdown("---")
+        st.markdown(" ")
         
-        product_rows = matched_rows[matched_rows['Product'] == st.session_state.selected_prod]
-        
-        # Перемикач забруднень великими кнопками
         st.markdown("### 3. Чи є видимі забруднення (кров, виділення тощо):")
         col1, col2 = st.columns(2)
         if 'tech_cont' not in st.session_state:
@@ -140,9 +81,8 @@ if df is not None:
             if st.button("🟢 НІ"):
                 st.session_state.tech_cont = "NO"
                 
-        st.markdown(f"👉 **Стан забруднення:** `{'ТАК (Посилений режим)' if st.session_state.tech_cont == 'YES' else 'НІ (Стандартний режим)'}`")
+        st.markdown(f"👉 **Обрано стан забруднення:** `{'ТАК (Посилений режим)' if st.session_state.tech_cont == 'YES' else 'НІ (Стандартний режим)'}`")
         
-        # Фінальна фільтрація результату
         final_row_df = product_rows[product_rows['Contamination_Tech'] == st.session_state.tech_cont]
         if final_row_df.empty and not product_rows.empty:
             final_row_df = product_rows
@@ -165,3 +105,16 @@ if df is not None:
                 raw_exposure = str(final_row['Exposure_min'])
                 exp_time = int(''.join(filter(str.isdigit, raw_exposure))) if any(char.isdigit() for char in raw_exposure) else 15
                 st.markdown(f"⏱️ **Рекомендований час експозиції:** {exp_time} хв.")
+                st.markdown(" ")
+                
+                if st.button("⏱️ ЗАПУСТИТИ ТАЙМЕР ЕКСПОЗИЦІЇ"):
+                    progress_bar = st.progress(100)
+                    status_text = st.empty()
+                    total_seconds = exp_time
+                    for remaining in range(total_seconds, -1, -1):
+                        percent = int((remaining / total_seconds) * 100)
+                        progress_bar.progress(percent)
+                        status_text.markdown(f"⏳ **{remaining} min.**")
+                        time.sleep(60)
+                    st.balloons()
+                    status_text.success("✅ Експозицію завершено! Об'єкт повністю безпечний.")
